@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Infra Dashboard</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Arial;
+    background: radial-gradient(circle at top, #000000, #0a0a0a);
+    color: #f1f5f9;
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255,0,0,0.2);
+    background: rgba(255,0,0,0.05);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand img {
+    height: 45px;
+  }
+
+  input {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,0,0,0.3);
+    width: 260px;
+    background: #000;
+    color: #fff;
+    outline: none;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+    padding: 20px;
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 16px;
+    background: linear-gradient(145deg, #000000, #0b0b0b);
+    border: 1px solid rgba(255,0,0,0.25);
+    transition: 0.25s;
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255,0,0,0.6);
+    box-shadow: 0 0 20px rgba(255,0,0,0.2);
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .chip {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: rgba(255,0,0,0.1);
+    color: #fca5a5;
+    border: 1px solid rgba(255,0,0,0.2);
+  }
+
+  .info {
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  .txt-server { color: #60a5fa; }
+  .txt-firewall { color: #f87171; }
+  .txt-cups { color: #34d399; }
+
+  .btn {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,0,0,0.2);
+    background: rgba(255,255,255,0.03);
+    color: #f1f5f9;
+    cursor: pointer;
+    transition: 0.2s;
+    text-decoration: none;
+    font-size: 12px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .btn:hover {
+    background: rgba(255,0,0,0.06);
+    transform: translateY(-2px);
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-box {
+    background: #0b0b0b;
+    padding: 20px;
+    border-radius: 12px;
+    width: 320px;
+    border: 1px solid rgba(255,0,0,0.3);
+  }
+
+  .modal-box input {
+    width: 100%;
+    margin: 6px 0;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <img src="logo.png">
+    <strong>Infra Dashboard</strong>
+  </div>
+
+  <input id="search" placeholder="Buscar filial ou IP...">
+
+  <button class="btn" onclick="abrirModal()">➕ Nova Filial</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h3>➕ Nova Filial</h3>
+
+    <input id="nome" placeholder="Ex: F120 - NOVA FILIAL">
+    <input id="base" placeholder="Ex: 10.0.120">
+
+    <button class="btn" onclick="adicionar()">Criar</button>
+    <button class="btn" onclick="fecharModal()">Cancelar</button>
+  </div>
+</div>
+
+<script>
+const grid = document.getElementById("grid");
+const modal = document.getElementById("modal");
+const search = document.getElementById("search");
+
+/* =========================
+   STORAGE
+========================= */
+let servidores = JSON.parse(localStorage.getItem("infra")) || [];
+
+function salvar(){
+  localStorage.setItem("infra", JSON.stringify(servidores));
+}
+
+/* =========================
+   FILIAIS AUTO GERADAS
+========================= */
+const filiais = [];
+
+// MATRIZ
+filiais.push("F0000 - MATRIZ - LUCAS DO RIO VERDE");
+
+// FILIAIS ATÉ 119
+for(let i = 1; i <= 119; i++){
+  let numero = i.toString().padStart(4, "0");
+  filiais.push(`F${numero} - FILIAL ${i}`);
+}
+
+/* =========================
+   INIT
+========================= */
+if(servidores.length === 0){
+  filiais.forEach((f, i) => {
+    let base = `10.0.${i}`;
+
+    servidores.push({
+      nome: f,
+      servidor: `${base}.1`,
+      firewall: `${base}.254`,
+      cups: `${base}.43`,
+      urlServidor: `https://${base}.1:8006`,
+      urlFirewall: `https://${base}.254:4444`,
+      urlCups: `http://${base}.43:631`
+    });
+  });
+
+  salvar();
+}
+
+/* =========================
+   RENDER
+========================= */
+function render(lista){
+  grid.innerHTML = lista.map(s => `
+    <div class="card">
+      <div class="title">${s.nome}</div>
+
+      <div class="chips">
+        <div class="chip">Servidor</div>
+        <div class="chip">Firewall</div>
+        <div class="chip">CUPS</div>
+      </div>
+
+      <div class="info txt-server">🖥️ ${s.servidor}</div>
+      <div class="info txt-firewall">🔥 ${s.firewall}</div>
+      <div class="info txt-cups">🖨️ ${s.cups}</div>
+
+      <div class="actions">
+        <a class="btn" href="${s.urlServidor}" target="_blank">Server</a>
+        <a class="btn" href="${s.urlFirewall}" target="_blank">FW</a>
+        <a class="btn" href="${s.urlCups}" target="_blank">CUPS</a>
+      </div>
+    </div>
+  `).join("");
+}
+
+/* =========================
+   BUSCA
+========================= */
+search.addEventListener("input", () => {
+  let t = search.value.toLowerCase();
+
+  render(servidores.filter(s =>
+    s.nome.toLowerCase().includes(t) ||
+    s.servidor.includes(t) ||
+    s.firewall.includes(t) ||
+    s.cups.includes(t)
+  ));
+});
+
+/* =========================
+   MODAL
+========================= */
+function abrirModal(){
+  modal.style.display = "flex";
+  document.getElementById("nome").focus();
+}
+
+function fecharModal(){
+  modal.style.display = "none";
+}
+
+modal.addEventListener("click", e => {
+  if(e.target === modal) fecharModal();
+});
+
+/* =========================
+   ADD
+========================= */
+function adicionar(){
+  let nome = document.getElementById("nome").value.trim();
+  let base = document.getElementById("base").value.trim();
+
+  if(!nome || !base){
+    alert("Preencha todos os campos!");
+    return;
+  }
+
+  if(!/^(\d+\.\d+\.\d+)$/.test(base)){
+    alert("Base inválida! Ex: 10.0.120");
+    return;
+  }
+
+  servidores.push({
+    nome,
+    servidor: `${base}.1`,
+    firewall: `${base}.254`,
+    cups: `${base}.43`,
+    urlServidor: `https://${base}.1:8006`,
+    urlFirewall: `https://${base}.254:4444`,
+    urlCups: `http://${base}.43:631`
+  });
+
+  salvar();
+  fecharModal();
+  render(servidores);
+}
+
+/* ENTER */
+document.getElementById("base").addEventListener("keypress", e => {
+  if(e.key === "Enter") adicionar();
+});
+
+/* INIT */
+render(servidores);
+</script>
+
+</body>
+</html>
