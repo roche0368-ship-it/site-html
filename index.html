@@ -7,78 +7,250 @@
 <style>
   body {
     margin: 0;
-    font-family: "Segoe UI", Arial;
-    background: radial-gradient(circle at top, #000000, #0a0a0a);
+    font-family: "Segoe UI", Arial, sans-serif;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(255, 0, 0, .35), transparent 35%),
+      radial-gradient(circle at 85% 80%, rgba(0, 80, 255, .35), transparent 35%),
+      linear-gradient(135deg, #070b18, #101c42, #19070d);
+    background-attachment: fixed;
     color: #f1f5f9;
-  }
-
-  /* --- LOGIN SCREEN --- */
-  .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
   }
 
+  /* --- LUZES DE FUNDO E PARTÍCULAS (GLOBAL) --- */
+  .light {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: .45;
+    animation: floating 8s infinite ease-in-out;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .light-red {
+    width: 350px;
+    height: 350px;
+    background: #ff0000;
+    top: -100px;
+    left: -100px;
+  }
+
+  .light-blue {
+    width: 400px;
+    height: 400px;
+    background: #0055ff;
+    right: -120px;
+    bottom: -120px;
+    animation-delay: -3s;
+  }
+
+  .light-purple {
+    width: 250px;
+    height: 250px;
+    background: #6a00ff;
+    right: 30%;
+    top: 15%;
+    animation-delay: -5s;
+  }
+
+  @keyframes floating {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(40px, -35px) scale(1.15); }
+  }
+
+  .particles {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(255,255,255,.7);
+    border-radius: 50%;
+    animation: particleMove linear infinite;
+  }
+
+  @keyframes particleMove {
+    from { transform: translateY(100vh); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: .8; }
+    to { transform: translateY(-20vh); opacity: 0; }
+  }
+
+  /* --- LOGIN SCREEN --- */
+  #loginScreen {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+  }
+
+  .login-container {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+  }
+
   .login-box {
-    background: #0b0b0b;
-    padding: 30px;
-    border-radius: 16px;
-    width: 300px;
-    border: 1px solid rgba(255,0,0,0.3);
-    box-shadow: 0 0 25px rgba(255,0,0,0.15);
+    position: relative;
+    width: 400px;
+    max-width: 90%;
+    padding: 40px;
+    border-radius: 24px;
+    background: rgba(255,255,255,.10);
+    border: 1px solid rgba(255,255,255,.20);
+    backdrop-filter: blur(18px);
+    box-shadow:
+      0 25px 70px rgba(0,0,0,.45),
+      inset 0 0 30px rgba(255,255,255,.04);
     text-align: center;
+    animation: loginAppear .8s ease;
+  }
+
+  @keyframes loginAppear {
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .login-logo {
+    width: 240px;
+    max-width: 90%;
+    margin-bottom: 25px;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,.35));
   }
 
   .login-box h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 20px;
+    color: white;
+    font-size: 27px;
+    margin: 0 0 8px;
+    font-weight: 600;
+  }
+
+  .login-subtitle {
+    color: rgba(255,255,255,.70);
+    font-size: 14px;
+    margin-bottom: 28px;
+  }
+
+  /* INPUTS PADRÃO DE GLASSMORPHISM */
+  input {
+    box-sizing: border-box;
+    padding: 12px 16px;
+    border: 1px solid rgba(255,255,255,.20);
+    border-radius: 10px;
+    outline: none;
+    background: rgba(0,0,0,.35);
+    color: white;
+    font-size: 15px;
+    transition: .25s;
+  }
+
+  input::placeholder {
+    color: rgba(255,255,255,.55);
+  }
+
+  input:focus {
+    border-color: #ff3030;
+    box-shadow: 0 0 0 3px rgba(255,0,0,.15);
+    background: rgba(0,0,0,.50);
   }
 
   .login-box input {
     width: 100%;
-    box-sizing: border-box;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
   }
 
-  .login-box .btn {
+  /* BOTÃO COM GRADIENTE ANIMADO */
+  .login-button {
     width: 100%;
-    padding: 12px;
-    margin-top: 8px;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(90deg, #d90000, #ff2020, #005eff);
+    background-size: 200% 100%;
+    transition: .3s;
+    animation: buttonGradient 4s infinite alternate;
+  }
+
+  @keyframes buttonGradient {
+    from { background-position: left; }
+    to { background-position: right; }
+  }
+
+  .login-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255,0,0,.35);
   }
 
   .login-error {
-    color: #f87171;
-    font-size: 12px;
-    margin-top: 10px;
     display: none;
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    color: #fff;
+    background: rgba(180,0,0,.45);
+    border: 1px solid rgba(255,100,100,.3);
+    font-size: 13px;
   }
 
   /* --- DASHBOARD --- */
   #dashboard {
     display: none;
+    position: relative;
+    z-index: 10;
+    padding-bottom: 40px;
   }
 
   .topbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
+    padding: 15px 30px;
     flex-wrap: wrap;
-    gap: 10px;
-    border-bottom: 1px solid rgba(255,0,0,0.2);
-    background: rgba(255,0,0,0.05);
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   }
 
   .brand {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
   }
 
   .brand img {
-    height: 45px;
+    height: 40px;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+  }
+
+  .brand strong {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
   }
 
   .topbar-actions {
@@ -86,129 +258,259 @@
     gap: 10px;
   }
 
-  input {
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255,0,0,0.3);
-    width: 260px;
-    background: #000;
-    color: #fff;
-    outline: none;
+  .topbar input {
+    width: 280px;
   }
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 18px;
-    padding: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 22px;
+    padding: 30px;
   }
 
+  /* CARDS COM VERMELHO E AZUL MAIS FORTE */
   .card {
-    padding: 16px;
-    border-radius: 16px;
-    background: linear-gradient(145deg, #000000, #0b0b0b);
-    border: 1px solid rgba(255,0,0,0.25);
-    transition: 0.25s;
+    padding: 22px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(180, 0, 30, 0.45), rgba(0, 70, 200, 0.45));
+    border: 1px solid rgba(255, 80, 80, 0.4);
+    backdrop-filter: blur(16px);
+    box-shadow:
+      0 12px 30px rgba(0, 0, 0, 0.5),
+      inset 0 0 15px rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
   }
 
   .card:hover {
     transform: translateY(-6px);
-    border-color: rgba(255,0,0,0.6);
-    box-shadow: 0 0 20px rgba(255,0,0,0.2);
+    background: linear-gradient(135deg, rgba(220, 0, 40, 0.65), rgba(0, 100, 255, 0.65));
+    border-color: rgba(255, 120, 120, 0.7);
+    box-shadow:
+      0 20px 40px rgba(255, 0, 80, 0.35),
+      0 0 20px rgba(0, 120, 255, 0.3);
   }
 
   .title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 10px;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
   }
 
   .chips {
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
   }
 
   .chip {
     font-size: 11px;
-    padding: 4px 8px;
+    font-weight: 600;
+    padding: 4px 10px;
     border-radius: 999px;
-    background: rgba(255,0,0,0.1);
-    color: #fca5a5;
-    border: 1px solid rgba(255,0,0,0.2);
+    background: rgba(0, 0, 0, 0.35);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(4px);
   }
 
   .info {
     font-size: 13px;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    font-family: monospace;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.7);
   }
 
-  .txt-server { color: #60a5fa; }
-  .txt-firewall { color: #f87171; }
-  .txt-cups { color: #34d399; }
+  .txt-server { color: #a5f3fc; }
+  .txt-firewall { color: #fca5a5; }
+  .txt-cups { color: #6ee7b7; }
 
   .btn {
-    padding: 10px 12px;
+    padding: 10px 14px;
     border-radius: 10px;
-    border: 1px solid rgba(255,0,0,0.2);
-    background: rgba(255,255,255,0.03);
-    color: #f1f5f9;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.35);
+    color: #ffffff;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.25s ease;
     text-decoration: none;
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 600;
     display: inline-flex;
     justify-content: center;
     align-items: center;
   }
 
   .btn:hover {
-    background: rgba(255,0,0,0.06);
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.6);
     transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .btn-primary {
+    background: linear-gradient(90deg, #d90000, #ff2020);
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(90deg, #ff2020, #d90000);
+    box-shadow: 0 5px 15px rgba(255,0,0,0.4);
   }
 
   .actions {
     display: flex;
     gap: 8px;
-    margin-top: 12px;
+    margin-top: 16px;
   }
 
+  .actions .btn {
+    flex: 1;
+  }
+
+  /* MODAIS ESTILIZADOS */
   .modal {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.75);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
     justify-content: center;
     align-items: center;
+    z-index: 100;
   }
 
   .modal-box {
-    background: #0b0b0b;
-    padding: 20px;
-    border-radius: 12px;
-    width: 320px;
-    border: 1px solid rgba(255,0,0,0.3);
+    background: rgba(20, 25, 45, 0.90);
+    padding: 30px;
+    border-radius: 20px;
+    width: 360px;
+    max-width: 90%;
+    border: 1px solid rgba(255, 80, 80, 0.3);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+    backdrop-filter: blur(20px);
+  }
+
+  .modal-box h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 20px;
   }
 
   .modal-box input {
     width: 100%;
-    margin: 6px 0;
-    box-sizing: border-box;
+    margin-bottom: 12px;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .modal-actions .btn {
+    flex: 1;
+  }
+
+  /* LISTA DE USUÁRIOS NO MODAL */
+  .user-list {
+    max-height: 150px;
+    overflow-y: auto;
+    margin-top: 15px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 10px;
+  }
+
+  .user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .btn-remove {
+    background: rgba(255, 0, 0, 0.3);
+    border: 1px solid rgba(255, 100, 100, 0.4);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+  }
+
+  .btn-remove:hover {
+    background: rgba(255, 0, 0, 0.6);
+  }
+
+  @media (max-width: 700px) {
+    .login-box {
+      padding: 30px 25px;
+    }
+
+    .login-logo {
+      width: 210px;
+    }
+
+    .login-box h2 {
+      font-size: 24px;
+    }
+
+    .topbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .topbar input {
+      width: 100%;
+    }
   }
 </style>
 </head>
 
 <body>
 
+<!-- LUZES E PARTÍCULAS GLOBAIS DE FUNDO -->
+<div class="light light-red"></div>
+<div class="light light-blue"></div>
+<div class="light light-purple"></div>
+
+<div class="particles">
+  <span class="particle" style="left:5%; animation-duration:9s;"></span>
+  <span class="particle" style="left:12%; animation-duration:13s;"></span>
+  <span class="particle" style="left:20%; animation-duration:11s;"></span>
+  <span class="particle" style="left:28%; animation-duration:15s;"></span>
+  <span class="particle" style="left:36%; animation-duration:10s;"></span>
+  <span class="particle" style="left:45%; animation-duration:14s;"></span>
+  <span class="particle" style="left:53%; animation-duration:12s;"></span>
+  <span class="particle" style="left:61%; animation-duration:16s;"></span>
+  <span class="particle" style="left:70%; animation-duration:11s;"></span>
+  <span class="particle" style="left:78%; animation-duration:14s;"></span>
+  <span class="particle" style="left:87%; animation-duration:10s;"></span>
+  <span class="particle" style="left:94%; animation-duration:13s;"></span>
+</div>
+
 <!-- TELA DE LOGIN -->
 <div id="loginScreen" class="login-container">
   <div class="login-box">
-    <h2>🔒 Login Infra</h2>
-    <input id="user" type="text" placeholder="Usuário">
-    <input id="pass" type="password" placeholder="Senha">
-    <button class="btn" onclick="autenticar()">Entrar</button>
-    <div id="loginError" class="login-error">Usuário ou senha incorretos!</div>
+    <img src="logo.png" alt="Logo" class="login-logo">
+    <h2>Acesso as Filiais</h2>
+    <p class="login-subtitle">Gerenciamento de Filiais</p>
+
+    <input id="user" type="text" placeholder="Usuário" autocomplete="username">
+    <input id="pass" type="password" placeholder="Senha" autocomplete="current-password">
+
+    <button class="login-button" onclick="autenticar()">🔐 Entrar</button>
+
+    <div id="loginError" class="login-error">
+      Usuário ou senha incorretos.
+    </div>
   </div>
 </div>
 
@@ -223,13 +525,15 @@
     <input id="search" placeholder="Buscar filial ou IP...">
 
     <div class="topbar-actions">
-      <button class="btn" onclick="abrirModal()">➕ Nova Filial</button>
+      <button class="btn btn-primary" onclick="abrirModal()">➕ Nova Filial</button>
+      <button class="btn" onclick="abrirModalUsuarios()">👥 Usuários</button>
       <button class="btn" onclick="logout()">🚪 Sair</button>
     </div>
   </div>
 
   <div class="grid" id="grid"></div>
 
+  <!-- MODAL ADICIONAR FILIAL -->
   <div class="modal" id="modal">
     <div class="modal-box">
       <h3>➕ Nova Filial</h3>
@@ -237,25 +541,63 @@
       <input id="nome" placeholder="Ex: F120 - NOVA FILIAL">
       <input id="base" placeholder="Ex: 10.0.120">
 
-      <button class="btn" onclick="adicionar()">Criar</button>
-      <button class="btn" onclick="fecharModal()">Cancelar</button>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="adicionar()">Criar</button>
+        <button class="btn" onclick="fecharModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL GERENCIAR USUÁRIOS -->
+  <div class="modal" id="modalUsuarios">
+    <div class="modal-box">
+      <h3>👥 Gerenciar Usuários</h3>
+
+      <input id="novoUser" placeholder="Novo usuário">
+      <input id="novaPass" type="password" placeholder="Nova senha">
+
+      <button class="btn btn-primary" style="width:100%;" onclick="adicionarUsuario()">Cadastrar Usuário</button>
+
+      <div class="user-list" id="listaUsuarios"></div>
+
+      <div class="modal-actions">
+        <button class="btn" onclick="fecharModalUsuarios()">Fechar</button>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
 /* =========================
-   AUTENTICAÇÃO & SESSÃO
+   USUÁRIOS & BANCO DE DADOS
+========================= */
+const usuariosPadrao = [
+  { user: "admin", pass: "1234" }
+];
+
+let usuarios = JSON.parse(localStorage.getItem("infra_users")) || usuariosPadrao;
+
+function salvarUsuarios(){
+  localStorage.setItem("infra_users", JSON.stringify(usuarios));
+}
+
+/* =========================
+   AUTENTICAÇÃO & SESSÃO (TEMPORÁRIA VIA SESSIONSTORAGE)
 ========================= */
 const loginScreen = document.getElementById("loginScreen");
 const dashboard = document.getElementById("dashboard");
 const loginError = document.getElementById("loginError");
 
-function autenticar(){
-  const user = document.getElementById("user").value;
-  const pass = document.getElementById("pass").value;
+// Limpa resíduos de sessões salvas antigas no localStorage
+localStorage.removeItem("auth");
 
-  if(user === "admin" && pass === "admin"){
+function autenticar(){
+  const userDigitado = document.getElementById("user").value.trim();
+  const passDigitada = document.getElementById("pass").value.trim();
+
+  const usuarioValido = usuarios.find(u => u.user === userDigitado && u.pass === passDigitada);
+
+  if(usuarioValido){
     sessionStorage.setItem("auth", "true");
     loginError.style.display = "none";
     carregarTela();
@@ -289,7 +631,7 @@ document.getElementById("pass").addEventListener("keypress", e => {
 });
 
 /* =========================
-   STORAGE & INICIALIZAÇÃO
+   STORAGE & INICIALIZAÇÃO DE FILIAIS
 ========================= */
 const grid = document.getElementById("grid");
 const modal = document.getElementById("modal");
@@ -328,7 +670,7 @@ if(servidores.length === 0){
 }
 
 /* =========================
-   RENDER
+   RENDER FILIAIS
 ========================= */
 function render(lista){
   grid.innerHTML = lista.map(s => `
@@ -369,7 +711,7 @@ search.addEventListener("input", () => {
 });
 
 /* =========================
-   MODAL
+   MODAL FILIAIS
 ========================= */
 function abrirModal(){
   modal.style.display = "flex";
@@ -385,7 +727,69 @@ modal.addEventListener("click", e => {
 });
 
 /* =========================
-   ADD
+   MODAL USUÁRIOS
+========================= */
+const modalUsuarios = document.getElementById("modalUsuarios");
+
+function abrirModalUsuarios(){
+  modalUsuarios.style.display = "flex";
+  renderUsuarios();
+}
+
+function fecharModalUsuarios(){
+  modalUsuarios.style.display = "none";
+}
+
+modalUsuarios.addEventListener("click", e => {
+  if(e.target === modalUsuarios) fecharModalUsuarios();
+});
+
+function adicionarUsuario(){
+  const novoUser = document.getElementById("novoUser").value.trim();
+  const novaPass = document.getElementById("novaPass").value.trim();
+
+  if(!novoUser || !novaPass){
+    alert("Preencha usuário e senha!");
+    return;
+  }
+
+  if(usuarios.some(u => u.user === novoUser)){
+    alert("Este usuário já existe!");
+    return;
+  }
+
+  usuarios.push({ user: novoUser, pass: novaPass });
+  salvarUsuarios();
+
+  document.getElementById("novoUser").value = "";
+  document.getElementById("novaPass").value = "";
+
+  renderUsuarios();
+}
+
+function removerUsuario(uName){
+  if(uName === "admin"){
+    alert("O usuário admin principal não pode ser removido!");
+    return;
+  }
+
+  usuarios = usuarios.filter(u => u.user !== uName);
+  salvarUsuarios();
+  renderUsuarios();
+}
+
+function renderUsuarios(){
+  const lista = document.getElementById("listaUsuarios");
+  lista.innerHTML = usuarios.map(u => `
+    <div class="user-item">
+      <span>👤 ${u.user}</span>
+      ${u.user !== 'admin' ? `<button class="btn-remove" onclick="removerUsuario('${u.user}')">Excluir</button>` : '<small style="color:rgba(255,255,255,0.4)">Padrão</small>'}
+    </div>
+  `).join("");
+}
+
+/* =========================
+   ADD FILIAL
 ========================= */
 function adicionar(){
   let nome = document.getElementById("nome").value.trim();
@@ -420,7 +824,7 @@ document.getElementById("base").addEventListener("keypress", e => {
   if(e.key === "Enter") adicionar();
 });
 
-/* INICIALIZAR VERIFICAÇÃO DE SESSÃO */
+/* INICIALIZAR VERIFICAÇÃO DE SESSÃO NA CARGA DO NAVEGADOR */
 carregarTela();
 </script>
 
