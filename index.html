@@ -15,6 +15,7 @@
     background-attachment: fixed;
     color: #f1f5f9;
     min-height: 100vh;
+    overflow-x: hidden;
   }
 
   /* --- LUZES DE FUNDO E PARTÍCULAS (GLOBAL) --- */
@@ -81,6 +82,68 @@
     20% { opacity: 1; }
     80% { opacity: .8; }
     to { transform: translateY(-20vh); opacity: 0; }
+  }
+
+  /* --- MÚLTIPLOS FOGUETES ANIMADOS --- */
+  .rocket {
+    position: fixed;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* Foguete 1: Principal */
+  .rocket-1 {
+    font-size: 28px;
+    filter: drop-shadow(0 0 14px rgba(255, 100, 0, 0.9));
+    animation: orbitRocket1 20s linear infinite;
+  }
+
+  @keyframes orbitRocket1 {
+    0% { top: 90vh; left: -60px; transform: rotate(45deg) scale(0.8); }
+    25% { top: 20vh; left: 25vw; transform: rotate(65deg) scale(1.1); }
+    50% { top: 65vh; left: 55vw; transform: rotate(35deg) scale(0.9); }
+    75% { top: 15vh; left: 80vw; transform: rotate(70deg) scale(1.2); }
+    100% { top: -60px; left: 105vw; transform: rotate(45deg) scale(0.8); }
+  }
+
+  /* Foguete 2: Rápido subindo diagonalmente */
+  .rocket-2 {
+    font-size: 22px;
+    filter: drop-shadow(0 0 10px rgba(0, 180, 255, 0.9));
+    animation: orbitRocket2 12s linear infinite;
+    animation-delay: 3s;
+  }
+
+  @keyframes orbitRocket2 {
+    0% { top: 105vh; left: 10vw; transform: rotate(30deg) scale(0.7); }
+    100% { top: -10vh; left: 90vw; transform: rotate(30deg) scale(1.1); }
+  }
+
+  /* Foguete 3: Pequeno cruzando ao fundo */
+  .rocket-3 {
+    font-size: 18px;
+    opacity: 0.6;
+    filter: drop-shadow(0 0 8px rgba(255, 0, 150, 0.8));
+    animation: orbitRocket3 16s linear infinite;
+    animation-delay: 7s;
+  }
+
+  @keyframes orbitRocket3 {
+    0% { top: 40vh; left: 105vw; transform: rotate(-135deg) scale(0.8); }
+    100% { top: 85vh; left: -60px; transform: rotate(-135deg) scale(0.8); }
+  }
+
+  /* Foguete 4: Rasante veloz de cima para baixo */
+  .rocket-4 {
+    font-size: 24px;
+    filter: drop-shadow(0 0 12px rgba(255, 220, 0, 0.9));
+    animation: orbitRocket4 9s linear infinite;
+    animation-delay: 1s;
+  }
+
+  @keyframes orbitRocket4 {
+    0% { top: -60px; left: 40vw; transform: rotate(140deg) scale(0.9); }
+    100% { top: 105vh; left: 85vw; transform: rotate(140deg) scale(1.1); }
   }
 
   /* --- LOGIN SCREEN --- */
@@ -150,16 +213,15 @@
     margin-bottom: 28px;
   }
 
-  /* INPUTS PADRÃO DE GLASSMORPHISM */
   input {
     box-sizing: border-box;
-    padding: 12px 16px;
+    padding: 10px 14px;
     border: 1px solid rgba(255,255,255,.20);
     border-radius: 10px;
     outline: none;
     background: rgba(0,0,0,.35);
     color: white;
-    font-size: 15px;
+    font-size: 14px;
     transition: .25s;
   }
 
@@ -178,7 +240,6 @@
     margin-bottom: 15px;
   }
 
-  /* BOTÃO COM GRADIENTE ANIMADO */
   .login-button {
     width: 100%;
     padding: 14px;
@@ -227,9 +288,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 30px;
+    padding: 12px 24px;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 12px;
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(18px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.15);
@@ -239,118 +300,190 @@
   .brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
 
   .brand img {
-    height: 40px;
+    height: 34px;
     filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
   }
 
   .brand strong {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     letter-spacing: 0.5px;
   }
 
   .topbar-actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
   }
 
   .topbar input {
-    width: 280px;
+    width: 240px;
   }
 
+  /* --- GRID E CARDS --- */
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 22px;
-    padding: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    padding: 20px;
   }
 
-  /* CARDS COM VERMELHO E AZUL MAIS FORTE */
   .card {
-    padding: 22px;
-    border-radius: 20px;
-    background: linear-gradient(135deg, rgba(180, 0, 30, 0.45), rgba(0, 70, 200, 0.45));
-    border: 1px solid rgba(255, 80, 80, 0.4);
+    position: relative;
+    padding: 14px 16px;
+    border-radius: 14px;
     backdrop-filter: blur(16px);
-    box-shadow:
-      0 12px 30px rgba(0, 0, 0, 0.5),
-      inset 0 0 15px rgba(255, 255, 255, 0.05);
-    transition: all 0.3s ease;
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+    animation: cardAppear 0.4s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes cardAppear {
+    from {
+      opacity: 0;
+      transform: translateY(15px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
   }
 
   .card:hover {
-    transform: translateY(-6px);
-    background: linear-gradient(135deg, rgba(220, 0, 40, 0.65), rgba(0, 100, 255, 0.65));
-    border-color: rgba(255, 120, 120, 0.7);
-    box-shadow:
-      0 20px 40px rgba(255, 0, 80, 0.35),
-      0 0 20px rgba(0, 120, 255, 0.3);
+    transform: translateY(-5px) scale(1.02);
   }
 
   .title {
-    font-size: 17px;
+    font-size: 14px;
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     color: #ffffff;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    letter-spacing: 0.3px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .chips {
     display: flex;
     gap: 6px;
-    flex-wrap: wrap;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
 
   .chip {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.35);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(4px);
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .chip-server {
+    background: rgba(6, 182, 212, 0.2);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+  }
+
+  .chip-firewall {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.4);
+  }
+
+  .chip-cups {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid rgba(52, 211, 153, 0.4);
+  }
+
+  .info-box {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
   .info {
-    font-size: 13px;
-    margin-bottom: 6px;
-    font-family: monospace;
+    font-size: 11px;
+    margin-bottom: 4px;
+    font-family: 'Consolas', 'Fira Code', monospace;
     font-weight: 600;
-    letter-spacing: 0.3px;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .info:last-child {
+    margin-bottom: 0;
   }
 
   .txt-server { color: #a5f3fc; }
   .txt-firewall { color: #fca5a5; }
   .txt-cups { color: #6ee7b7; }
 
+  .actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .actions .btn {
+    flex: 1;
+    padding: 6px 0;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    backdrop-filter: blur(5px);
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .actions .btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+  }
+
   .btn {
-    padding: 10px 14px;
-    border-radius: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.3);
     background: rgba(0, 0, 0, 0.35);
     color: #ffffff;
     cursor: pointer;
     transition: all 0.25s ease;
     text-decoration: none;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     display: inline-flex;
     justify-content: center;
     align-items: center;
-  }
-
-  .btn:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.6);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   }
 
   .btn-primary {
@@ -363,17 +496,7 @@
     box-shadow: 0 5px 15px rgba(255,0,0,0.4);
   }
 
-  .actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 16px;
-  }
-
-  .actions .btn {
-    flex: 1;
-  }
-
-  /* MODAIS ESTILIZADOS */
+  /* MODAIS */
   .modal {
     display: none;
     position: fixed;
@@ -387,9 +510,9 @@
 
   .modal-box {
     background: rgba(20, 25, 45, 0.90);
-    padding: 30px;
-    border-radius: 20px;
-    width: 360px;
+    padding: 24px;
+    border-radius: 18px;
+    width: 340px;
     max-width: 90%;
     border: 1px solid rgba(255, 80, 80, 0.3);
     box-shadow: 0 25px 50px rgba(0,0,0,0.6);
@@ -398,40 +521,39 @@
 
   .modal-box h3 {
     margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 20px;
+    margin-bottom: 16px;
+    font-size: 18px;
   }
 
   .modal-box input {
     width: 100%;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   .modal-actions {
     display: flex;
-    gap: 10px;
-    margin-top: 15px;
+    gap: 8px;
+    margin-top: 12px;
   }
 
   .modal-actions .btn {
     flex: 1;
   }
 
-  /* LISTA DE USUÁRIOS NO MODAL */
   .user-list {
-    max-height: 150px;
+    max-height: 140px;
     overflow-y: auto;
-    margin-top: 15px;
+    margin-top: 12px;
     border-top: 1px solid rgba(255,255,255,0.1);
-    padding-top: 10px;
+    padding-top: 8px;
   }
 
   .user-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 0;
-    font-size: 14px;
+    padding: 5px 0;
+    font-size: 13px;
     border-bottom: 1px solid rgba(255,255,255,0.05);
   }
 
@@ -439,10 +561,10 @@
     background: rgba(255, 0, 0, 0.3);
     border: 1px solid rgba(255, 100, 100, 0.4);
     color: #fff;
-    padding: 2px 8px;
+    padding: 2px 6px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .btn-remove:hover {
@@ -450,37 +572,29 @@
   }
 
   @media (max-width: 700px) {
-    .login-box {
-      padding: 30px 25px;
-    }
-
-    .login-logo {
-      width: 210px;
-    }
-
-    .login-box h2 {
-      font-size: 24px;
-    }
-
-    .topbar {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .topbar input {
-      width: 100%;
-    }
+    .login-box { padding: 30px 25px; }
+    .login-logo { width: 210px; }
+    .login-box h2 { font-size: 24px; }
+    .topbar { flex-direction: column; align-items: stretch; }
+    .topbar input { width: 100%; }
   }
 </style>
 </head>
 
 <body>
 
-<!-- LUZES E PARTÍCULAS GLOBAIS DE FUNDO -->
+<!-- LUZES DE FUNDO -->
 <div class="light light-red"></div>
 <div class="light light-blue"></div>
 <div class="light light-purple"></div>
 
+<!-- MÚLTIPLOS FOGUETES -->
+<div class="rocket rocket-1">🚀</div>
+<div class="rocket rocket-2">🚀</div>
+<div class="rocket rocket-3">🚀</div>
+<div class="rocket rocket-4">🚀</div>
+
+<!-- PARTÍCULAS -->
 <div class="particles">
   <span class="particle" style="left:5%; animation-duration:9s;"></span>
   <span class="particle" style="left:12%; animation-duration:13s;"></span>
@@ -568,27 +682,17 @@
 </div>
 
 <script>
-/* =========================
-   USUÁRIOS & BANCO DE DADOS
-========================= */
-const usuariosPadrao = [
-  { user: "admin", pass: "1234" }
-];
-
+const usuariosPadrao = [{ user: "admin", pass: "1234" }];
 let usuarios = JSON.parse(localStorage.getItem("infra_users")) || usuariosPadrao;
 
 function salvarUsuarios(){
   localStorage.setItem("infra_users", JSON.stringify(usuarios));
 }
 
-/* =========================
-   AUTENTICAÇÃO & SESSÃO (TEMPORÁRIA VIA SESSIONSTORAGE)
-========================= */
 const loginScreen = document.getElementById("loginScreen");
 const dashboard = document.getElementById("dashboard");
 const loginError = document.getElementById("loginError");
 
-// Limpa resíduos de sessões salvas antigas no localStorage
 localStorage.removeItem("auth");
 
 function autenticar(){
@@ -625,14 +729,10 @@ function carregarTela(){
   }
 }
 
-/* Enter para logar */
 document.getElementById("pass").addEventListener("keypress", e => {
   if(e.key === "Enter") autenticar();
 });
 
-/* =========================
-   STORAGE & INICIALIZAÇÃO DE FILIAIS
-========================= */
 const grid = document.getElementById("grid");
 const modal = document.getElementById("modal");
 const search = document.getElementById("search");
@@ -669,36 +769,57 @@ if(servidores.length === 0){
   salvar();
 }
 
-/* =========================
-   RENDER FILIAIS
-========================= */
 function render(lista){
-  grid.innerHTML = lista.map(s => `
-    <div class="card">
-      <div class="title">${s.nome}</div>
+  grid.innerHTML = lista.map((s, index) => {
+    const hue = (index * 137.5) % 360;
 
-      <div class="chips">
-        <div class="chip">Servidor</div>
-        <div class="chip">Firewall</div>
-        <div class="chip">CUPS</div>
+    const bgStart = `hsla(${hue}, 65%, 15%, 0.55)`;
+    const bgEnd = `hsla(${(hue + 30) % 360}, 65%, 8%, 0.75)`;
+    const border = `hsla(${hue}, 70%, 50%, 0.25)`;
+
+    const borderHover = `hsla(${hue}, 90%, 60%, 0.8)`;
+    const glowColor = `hsla(${hue}, 85%, 55%, 0.35)`;
+
+    const delay = Math.min(index * 0.03, 0.6);
+
+    return `
+      <div class="card" style="
+        background: linear-gradient(145deg, ${bgStart}, ${bgEnd});
+        border: 1px solid ${border};
+        animation-delay: ${delay}s;
+      "
+      onmouseenter="
+        this.style.borderColor='${borderHover}';
+        this.style.boxShadow='0 12px 28px ${glowColor}, inset 0 0 10px ${glowColor}';
+      "
+      onmouseleave="
+        this.style.borderColor='${border}';
+        this.style.boxShadow='0 8px 20px rgba(0,0,0,0.35)';
+      ">
+        <div class="title" title="${s.nome}">${s.nome}</div>
+
+        <div class="chips">
+          <span class="chip chip-server">Server</span>
+          <span class="chip chip-firewall">FW</span>
+          <span class="chip chip-cups">CUPS</span>
+        </div>
+
+        <div class="info-box">
+          <div class="info txt-server">🖥️ ${s.servidor}</div>
+          <div class="info txt-firewall">🔥 ${s.firewall}</div>
+          <div class="info txt-cups">🖨️ ${s.cups}</div>
+        </div>
+
+        <div class="actions">
+          <a class="btn" href="${s.urlServidor}" target="_blank">Server</a>
+          <a class="btn" href="${s.urlFirewall}" target="_blank">FW</a>
+          <a class="btn" href="${s.urlCups}" target="_blank">CUPS</a>
+        </div>
       </div>
-
-      <div class="info txt-server">🖥️ ${s.servidor}</div>
-      <div class="info txt-firewall">🔥 ${s.firewall}</div>
-      <div class="info txt-cups">🖨️ ${s.cups}</div>
-
-      <div class="actions">
-        <a class="btn" href="${s.urlServidor}" target="_blank">Server</a>
-        <a class="btn" href="${s.urlFirewall}" target="_blank">FW</a>
-        <a class="btn" href="${s.urlCups}" target="_blank">CUPS</a>
-      </div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
-/* =========================
-   BUSCA
-========================= */
 search.addEventListener("input", () => {
   let t = search.value.toLowerCase();
 
@@ -710,9 +831,6 @@ search.addEventListener("input", () => {
   ));
 });
 
-/* =========================
-   MODAL FILIAIS
-========================= */
 function abrirModal(){
   modal.style.display = "flex";
   document.getElementById("nome").focus();
@@ -726,9 +844,6 @@ modal.addEventListener("click", e => {
   if(e.target === modal) fecharModal();
 });
 
-/* =========================
-   MODAL USUÁRIOS
-========================= */
 const modalUsuarios = document.getElementById("modalUsuarios");
 
 function abrirModalUsuarios(){
@@ -788,9 +903,6 @@ function renderUsuarios(){
   `).join("");
 }
 
-/* =========================
-   ADD FILIAL
-========================= */
 function adicionar(){
   let nome = document.getElementById("nome").value.trim();
   let base = document.getElementById("base").value.trim();
@@ -805,7 +917,7 @@ function adicionar(){
     return;
   }
 
-  servidores.push({
+servidores.push({
     nome,
     servidor: `${base}.1`,
     firewall: `${base}.254`,
@@ -824,7 +936,6 @@ document.getElementById("base").addEventListener("keypress", e => {
   if(e.key === "Enter") adicionar();
 });
 
-/* INICIALIZAR VERIFICAÇÃO DE SESSÃO NA CARGA DO NAVEGADOR */
 carregarTela();
 </script>
 
