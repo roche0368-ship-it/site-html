@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acesso Filiais</title>
+
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0b0b0d;
+    --panel: #141416;
+    --panel-2: #191719;
+    --line: rgba(226, 64, 72, .22);
+    --cyan: #df3f48;
+    --pink: #a9363d;
+    --text: #f1eeee;
+    --muted: #aaa3a3;
+  }
+
+  * { box-sizing: border-box; }
+  html { min-height: 100%; background: var(--bg); }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: var(--text);
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: var(--bg);
+    background-image: radial-gradient(ellipse at 50% -20%, #1b1113 0%, transparent 65%);
+  }
+
+  #loginScreen {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+  }
+  .login-container { width: 100%; display: flex; justify-content: center; align-items: center; }
+  .login-box {
+    width: 420px;
+    max-width: 100%;
+    padding: 36px;
+    text-align: center;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--cyan);
+    border-radius: 8px;
+    box-shadow: 0 18px 50px rgba(0,0,0,.35);
+  }
+  .login-logo { width: 220px; max-width: 90%; margin-bottom: 22px; }
+  .login-box h2 { margin: 0 0 8px; color: var(--text); font-size: 26px; letter-spacing: .04em; }
+  .login-subtitle { margin: 0 0 26px; color: var(--muted); font-size: 14px; }
+
+  input {
+    padding: 11px 13px;
+    color: var(--text);
+    background: #0d0d0f;
+    border: 1px solid #333033;
+    border-radius: 5px;
+    outline: none;
+    font: inherit;
+    font-size: 14px;
+    transition: border-color .15s ease;
+  }
+  input::placeholder { color: #8e8889; }
+  input:focus { border-color: var(--cyan); }
+  .login-box input { width: 100%; margin-bottom: 12px; }
+  .login-button {
+    width: 100%;
+    padding: 13px;
+    color: #160b0c;
+    background: var(--cyan);
+    border: 0;
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .login-button:hover { background: #eb5961; }
+  .login-error {
+    display: none;
+    margin-top: 14px;
+    padding: 10px;
+    color: #f2dedf;
+    background: #251416;
+    border: 1px solid rgba(223,63,72,.34);
+    border-radius: 5px;
+    font-size: 13px;
+  }
+
+  #dashboard { display: none; min-height: 100vh; padding-bottom: 32px; }
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 13px 22px;
+    background: #0d0d0fee;
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand img { height: 32px; }
+  .brand strong { color: var(--cyan); font-size: 15px; letter-spacing: .08em; text-transform: uppercase; }
+  .topbar input { width: min(340px, 100%); flex: 1 1 220px; }
+  .topbar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .grid-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 12px;
+    padding: 18px 18px 0;
+  }
+  .grid-heading h1 { margin: 3px 0 0; color: var(--text); font-size: 20px; }
+  .section-kicker { color: #c8797d; font: 700 10px/1.2 Consolas, "Courier New", monospace; letter-spacing: .16em; text-transform: uppercase; }
+  .result-count { padding: 5px 9px; color: #d8b6b7; background: #1a1415; border: 1px solid #3d2b2d; border-radius: 4px; font: 700 11px Consolas, "Courier New", monospace; white-space: nowrap; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+    gap: 12px;
+    padding: 12px 18px 18px;
+  }
+  .card {
+    min-width: 0;
+    padding: 14px;
+    overflow: hidden;
+    background: linear-gradient(150deg, #181719, #121214 70%);
+    border: 1px solid #302b2c;
+    border-top: 2px solid #794044;
+    border-radius: 6px;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 225px;
+    transition: border-color .15s ease;
+  }
+  .card:hover { border-color: #b84d53; }
+  .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+  .branch-kicker { display: block; margin-bottom: 4px; color: #9c9192; font: 700 9px Consolas, "Courier New", monospace; letter-spacing: .12em; text-transform: uppercase; }
+  .branch-code { color: #e66a70; font: 800 22px/1.1 Consolas, "Courier New", monospace; letter-spacing: .035em; }
+  .branch-mark { margin-top: 2px; padding: 4px 6px; color: #d2a8aa; background: #211719; border: 1px solid #453033; border-radius: 3px; font: 700 9px Consolas, "Courier New", monospace; letter-spacing: .06em; }
+  .branch-name { min-height: 34px; margin-bottom: 12px; color: #e5e0e0; font-size: 13px; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+  .ip-list { display: grid; gap: 5px; padding: 9px; background: #0d0d0e; border: 1px solid #2c292a; border-radius: 4px; }
+  .ip-row { display: grid; grid-template-columns: 75px minmax(0, 1fr); align-items: center; gap: 8px; min-height: 21px; }
+  .ip-label { color: #cc777b; font: 700 9px Consolas, "Courier New", monospace; letter-spacing: .07em; }
+  .ip-value { overflow: hidden; color: #ded9d9; font: 600 11px Consolas, "Courier New", monospace; text-overflow: ellipsis; white-space: nowrap; }
+  .actions { display: flex; gap: 6px; margin-top: 11px; }
+  .actions .btn { flex: 1; padding: 7px 4px; font-size: 10px; }
+  .btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 11px;
+    color: var(--text);
+    background: #1a191a;
+    border: 1px solid #383233;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .btn:hover { border-color: var(--cyan); color: var(--cyan); }
+  .btn-primary { color: #160b0c; background: var(--cyan); border-color: var(--cyan); }
+  .btn-primary:hover { color: #160b0c; background: #eb5961; }
+
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+    padding: 18px;
+    background: rgba(0,0,0,.78);
+  }
+  .modal-box {
+    width: 360px;
+    max-width: 100%;
+    padding: 22px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-top: 2px solid #8f3b40;
+    border-radius: 7px;
+  }
+  .modal-box h3 { margin: 0 0 16px; color: var(--cyan); font-size: 18px; }
+  .modal-box input { width: 100%; margin-bottom: 10px; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 12px; }
+  .modal-actions .btn { flex: 1; }
+  .user-list { max-height: 140px; overflow-y: auto; margin-top: 12px; padding-top: 8px; border-top: 1px solid #333033; }
+  .user-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #2d2b2c; font-size: 13px; }
+  .btn-remove { padding: 3px 7px; color: #f2dedf; background: #251416; border: 1px solid rgba(223,63,72,.32); border-radius: 4px; font-size: 10px; cursor: pointer; }
+  .btn-remove:hover { border-color: var(--pink); }
+
+  @media (max-width: 700px) {
+    .topbar { position: static; flex-direction: column; align-items: stretch; padding: 14px; }
+    .topbar input { width: 100%; }
+    .topbar-actions .btn { flex: 1; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); padding: 10px 12px 12px; gap: 9px; }
+    .grid-heading { padding: 15px 12px 0; }
+    .login-box { padding: 28px 22px; }
+  }
+  @media (max-width: 430px) {
+    .grid { grid-template-columns: 1fr; }
+    .topbar-actions { display: grid; grid-template-columns: 1fr 1fr; }
+    .topbar-actions .btn:first-child { grid-column: 1 / -1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+  }
+
+  /* VISUAL CYBERPUNK REFINADO */
+  :root {
+    --bg: #080b13;
+    --panel: #111725;
+    --panel-2: #151d2d;
+    --line: rgba(82, 230, 220, .22);
+    --cyan: #52e6dc;
+    --pink: #b88aff;
+    --text: #edf2ff;
+    --muted: #98a5ba;
+  }
+  body { background-color: var(--bg); background-image: radial-gradient(ellipse at 50% -20%, #131b31 0%, transparent 68%); }
+  .login-box { background: #111725; border-color: #26364b; border-top-color: var(--cyan); }
+  input { background: #0b101a; border-color: #2b374c; }
+  input::placeholder { color: #79869c; }
+  .login-error { color: #f4e9ff; background: #21172d; border-color: rgba(184,138,255,.38); }
+  .topbar { background: rgba(9,14,24,.97); border-bottom-color: #263449; }
+  .brand strong { color: var(--cyan); }
+  .section-kicker { color: #b88aff; }
+  .result-count { color: #b7f6f1; background: #102125; border-color: #285457; }
+  .card {
+    position: relative;
+    padding: 15px;
+    background: #111725;
+    border: 1px solid #28364b;
+    border-left: 3px solid #42c9c6;
+    border-radius: 7px;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 225px;
+    transition: border-color .15s ease, background-color .15s ease;
+  }
+  .card:hover { background: #141d2d; border-color: #52cfc9; }
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #263449;
+  }
+  .branch-kicker { color: #8c9ab0; font: 700 9px Consolas, "Courier New", monospace; letter-spacing: .14em; text-transform: uppercase; }
+  .branch-code { color: #62eee5; font: 800 23px/1.1 Consolas, "Courier New", monospace; letter-spacing: .04em; }
+  .branch-mark { padding: 5px 7px; color: #d2baff; background: #1c1830; border: 1px solid #40356a; border-radius: 4px; font: 700 9px Consolas, "Courier New", monospace; letter-spacing: .1em; }
+  .branch-name { min-height: 36px; margin: 0 0 12px; color: #eef2fb; font-size: 14px; font-weight: 650; line-height: 1.35; overflow-wrap: anywhere; }
+  .ip-list { display: grid; gap: 5px; padding: 9px; background: #0b101a; border: 1px solid #27334a; border-radius: 5px; }
+  .ip-row { display: grid; grid-template-columns: 75px minmax(0, 1fr); align-items: center; gap: 8px; min-height: 22px; }
+  .ip-label { color: #b99aff; font: 700 9px Consolas, "Courier New", monospace; letter-spacing: .07em; }
+  .ip-value { overflow: hidden; color: #dce5f5; font: 600 11px Consolas, "Courier New", monospace; text-overflow: ellipsis; white-space: nowrap; }
+  .actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 11px; }
+  .actions .btn { min-width: 0; padding: 7px 3px; color: #dce5f5; background: #151e2e; border: 1px solid #2b3b54; border-radius: 4px; font-size: 10px; }
+  .actions .btn:nth-child(1) { border-bottom: 2px solid #42c9c6; }
+  .actions .btn:nth-child(2) { border-bottom: 2px solid #b88aff; }
+  .actions .btn:nth-child(3) { border-bottom: 2px solid #788cff; }
+  .actions .btn:hover { color: #fff; background: #1d2a3e; border-color: var(--cyan); }
+  .btn { color: var(--text); background: #151e2e; border-color: #30415a; }
+  .btn:hover { color: var(--cyan); border-color: var(--cyan); }
+  .btn-primary { color: #071314; background: var(--cyan); border-color: var(--cyan); }
+  .btn-primary:hover { color: #071314; background: #8af4ed; }
+  .modal-box { background: #111725; border-color: #2b394f; border-top-color: var(--pink); }
+  .modal-box h3 { color: var(--cyan); }
+  .user-list { border-top-color: #2b394f; }
+  .user-item { border-bottom-color: #222e41; }
+  .btn-remove { color: #e8dcff; background: #21172d; border-color: rgba(184,138,255,.42); }
+  .btn-remove:hover { border-color: var(--pink); }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: .01ms !important; }
+  }
+
+</style>
+</head>
+
+<body>
+<!-- TELA DE LOGIN -->
+<div id="loginScreen" class="login-container">
+  <div class="login-box">
+    <img src="logo.png" alt="Logo" class="login-logo">
+    <h2>Acesso as Filiais</h2>
+    <p class="login-subtitle">Gerenciamento de Filiais</p>
+
+    <input id="user" type="text" placeholder="Usuário" autocomplete="username">
+    <input id="pass" type="password" placeholder="Senha" autocomplete="current-password">
+
+    <button class="login-button" onclick="autenticar()">🔐 Entrar</button>
+
+    <div id="loginError" class="login-error">
+      Usuário ou senha incorretos.
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="topbar">
+    <div class="brand">
+      <img src="logo.png" alt="Logo">
+      <strong>Infra Dashboard</strong>
+    </div>
+
+    <input id="search" type="search" aria-label="Buscar filial por código, nome ou IP" placeholder="Buscar por código, nome ou IP...">
+
+    <div class="topbar-actions">
+      <button class="btn btn-primary" onclick="abrirModal()">➕ Nova Filial</button>
+      <button class="btn" onclick="abrirModalUsuarios()">👥 Usuários</button>
+      <button class="btn" onclick="logout()">🚪 Sair</button>
+    </div>
+  </div>
+
+  <div class="grid-heading">
+    <div><span class="section-kicker">REDE / UNIDADES</span><h1>Filiais</h1></div>
+    <span class="result-count" id="resultCount" aria-live="polite"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+
+  <!-- MODAL ADICIONAR FILIAL -->
+  <div class="modal" id="modal">
+    <div class="modal-box">
+      <h3>➕ Nova Filial</h3>
+
+      <input id="nome" placeholder="Ex: F120 - NOVA FILIAL">
+      <input id="base" placeholder="Ex: 10.0.120">
+
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="adicionar()">Criar</button>
+        <button class="btn" onclick="fecharModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL GERENCIAR USUÁRIOS -->
+  <div class="modal" id="modalUsuarios">
+    <div class="modal-box">
+      <h3>👥 Gerenciar Usuários</h3>
+
+      <input id="novoUser" placeholder="Novo usuário">
+      <input id="novaPass" type="password" placeholder="Nova senha">
+
+      <button class="btn btn-primary" style="width:100%;" onclick="adicionarUsuario()">Cadastrar Usuário</button>
+
+      <div class="user-list" id="listaUsuarios"></div>
+
+      <div class="modal-actions">
+        <button class="btn" onclick="fecharModalUsuarios()">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const usuariosPadrao = [{ user: "admin", pass: "1234" }];
+let usuarios = JSON.parse(localStorage.getItem("infra_users")) || usuariosPadrao;
+
+function salvarUsuarios(){
+  localStorage.setItem("infra_users", JSON.stringify(usuarios));
+}
+
+const loginScreen = document.getElementById("loginScreen");
+const dashboard = document.getElementById("dashboard");
+const loginError = document.getElementById("loginError");
+
+localStorage.removeItem("auth");
+
+function autenticar(){
+  const userDigitado = document.getElementById("user").value.trim();
+  const passDigitada = document.getElementById("pass").value.trim();
+
+  const usuarioValido = usuarios.find(u => u.user === userDigitado && u.pass === passDigitada);
+
+  if(usuarioValido){
+    sessionStorage.setItem("auth", "true");
+    loginError.style.display = "none";
+    carregarTela();
+  } else {
+    loginError.style.display = "block";
+  }
+}
+
+function logout(){
+  sessionStorage.removeItem("auth");
+  carregarTela();
+}
+
+function carregarTela(){
+  const isAuth = sessionStorage.getItem("auth") === "true";
+  if(isAuth){
+    loginScreen.style.display = "none";
+    dashboard.style.display = "block";
+    render(servidores);
+  } else {
+    loginScreen.style.display = "flex";
+    dashboard.style.display = "none";
+    document.getElementById("user").value = "";
+    document.getElementById("pass").value = "";
+  }
+}
+
+document.getElementById("pass").addEventListener("keypress", e => {
+  if(e.key === "Enter") autenticar();
+});
+
+const grid = document.getElementById("grid");
+const modal = document.getElementById("modal");
+const search = document.getElementById("search");
+
+let servidores = JSON.parse(localStorage.getItem("infra")) || [];
+
+function salvar(){
+  localStorage.setItem("infra", JSON.stringify(servidores));
+}
+
+const filiais = [];
+filiais.push("F0000 - MATRIZ - LUCAS DO RIO VERDE");
+
+for(let i = 1; i <= 119; i++){
+  let numero = i.toString().padStart(4, "0");
+  filiais.push(`F${numero} - FILIAL ${i}`);
+}
+
+if(servidores.length === 0){
+  filiais.forEach((f, i) => {
+    let base = `10.0.${i}`;
+
+    servidores.push({
+      nome: f,
+      servidor: `${base}.1`,
+      firewall: `${base}.254`,
+      cups: `${base}.43`,
+      urlServidor: `https://${base}.1:8006`,
+      urlFirewall: `https://${base}.254:4444`,
+      urlCups: `http://${base}.43:631`
+    });
+  });
+
+  salvar();
+}
+
+function render(lista){
+  document.getElementById("resultCount").textContent = `${lista.length} ${lista.length === 1 ? "FILIAL" : "FILIAIS"}`;
+  grid.innerHTML = lista.map(s => {
+    const partes = s.nome.match(/^(F\d+)\s*[-–—]\s*(.*)$/i);
+    const codigo = partes ? partes[1].toUpperCase() : "UNIDADE";
+    const nomeFilial = partes ? partes[2] : s.nome;
+    return `
+      <article class="card">
+        <div class="card-head">
+          <div><span class="branch-kicker">Código da filial</span><div class="branch-code">${codigo}</div></div>
+          <span class="branch-mark">NODE</span>
+        </div>
+        <div class="branch-name">${nomeFilial}</div>
+        <div class="ip-list">
+          <div class="ip-row"><span class="ip-label">SERVIDOR</span><code class="ip-value">${s.servidor}</code></div>
+          <div class="ip-row"><span class="ip-label">FIREWALL</span><code class="ip-value">${s.firewall}</code></div>
+          <div class="ip-row"><span class="ip-label">IMPRESSÃO</span><code class="ip-value">${s.cups}</code></div>
+        </div>
+        <div class="actions">
+          <a class="btn" href="${s.urlServidor}" target="_blank" rel="noopener">Server</a>
+          <a class="btn" href="${s.urlFirewall}" target="_blank" rel="noopener">Firewall</a>
+          <a class="btn" href="${s.urlCups}" target="_blank" rel="noopener">CUPS</a>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+search.addEventListener("input", () => {
+  const termo = search.value.trim().toLowerCase();
+  const consultaNormalizada = termo.replace(/[\s._-]/g, "");
+  const consultaCodigo = consultaNormalizada.replace(/^f0*/, "");
+  render(servidores.filter(s => {
+    const nomeNormalizado = s.nome.toLowerCase().replace(/[\s._-]/g, "");
+    const codigo = (s.nome.match(/\bF\d+\b/i)?.[0] || "").toLowerCase().replace(/^f0*/, "");
+    return s.nome.toLowerCase().includes(termo) ||
+      nomeNormalizado.includes(consultaNormalizada) ||
+      (consultaCodigo && codigo.startsWith(consultaCodigo)) ||
+      s.servidor.includes(termo) ||
+      s.firewall.includes(termo) ||
+      s.cups.includes(termo);
+  }));
+});
+
+function abrirModal(){
+  modal.style.display = "flex";
+  document.getElementById("nome").focus();
+}
+
+function fecharModal(){
+  modal.style.display = "none";
+}
+
+modal.addEventListener("click", e => {
+  if(e.target === modal) fecharModal();
+});
+
+const modalUsuarios = document.getElementById("modalUsuarios");
+
+function abrirModalUsuarios(){
+  modalUsuarios.style.display = "flex";
+  renderUsuarios();
+}
+
+function fecharModalUsuarios(){
+  modalUsuarios.style.display = "none";
+}
+
+modalUsuarios.addEventListener("click", e => {
+  if(e.target === modalUsuarios) fecharModalUsuarios();
+});
+
+function adicionarUsuario(){
+  const novoUser = document.getElementById("novoUser").value.trim();
+  const novaPass = document.getElementById("novaPass").value.trim();
+
+  if(!novoUser || !novaPass){
+    alert("Preencha usuário e senha!");
+    return;
+  }
+
+  if(usuarios.some(u => u.user === novoUser)){
+    alert("Este usuário já existe!");
+    return;
+  }
+
+  usuarios.push({ user: novoUser, pass: novaPass });
+  salvarUsuarios();
+
+  document.getElementById("novoUser").value = "";
+  document.getElementById("novaPass").value = "";
+
+  renderUsuarios();
+}
+
+function removerUsuario(uName){
+  if(uName === "admin"){
+    alert("O usuário admin principal não pode ser removido!");
+    return;
+  }
+
+  usuarios = usuarios.filter(u => u.user !== uName);
+  salvarUsuarios();
+  renderUsuarios();
+}
+
+function renderUsuarios(){
+  const lista = document.getElementById("listaUsuarios");
+  lista.innerHTML = usuarios.map(u => `
+    <div class="user-item">
+      <span>👤 ${u.user}</span>
+      ${u.user !== 'admin' ? `<button class="btn-remove" onclick="removerUsuario('${u.user}')">Excluir</button>` : '<small style="color:rgba(255,100,100,0.5)">Padrão</small>'}
+    </div>
+  `).join("");
+}
+
+function adicionar(){
+  let nome = document.getElementById("nome").value.trim();
+  let base = document.getElementById("base").value.trim();
+
+  if(!nome || !base){
+    alert("Preencha todos os campos!");
+    return;
+  }
+
+  if(!/^(\d+\.\d+\.\d+)$/.test(base)){
+    alert("Base inválida! Ex: 10.0.120");
+    return;
+  }
+
+servidores.push({
+    nome,
+    servidor: `${base}.1`,
+    firewall: `${base}.254`,
+    cups: `${base}.43`,
+    urlServidor: `https://${base}.1:8006`,
+    urlFirewall: `https://${base}.254:4444`,
+    urlCups: `http://${base}.43:631`
+  });
+
+  salvar();
+  fecharModal();
+  render(servidores);
+}
+
+document.getElementById("base").addEventListener("keypress", e => {
+  if(e.key === "Enter") adicionar();
+});
+
+carregarTela();
+</script>
+
+</body>
+</html>
